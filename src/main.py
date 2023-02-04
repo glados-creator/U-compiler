@@ -74,7 +74,7 @@ def main(file):
     
     def goi(lis,ind):
         if ind != 2:
-            return list
+            return lis
         x= lis
         for _ in range(ind):
             lis = lis[-1]
@@ -104,6 +104,10 @@ def main(file):
         elif char == "\t" or txt[i] + txt[i+1] + txt[i+2] + txt[i+3] == "    ":
             local_indent += 1
         elif char == " ":
+            print(word)
+            backword.append(word)
+            print(backword)
+            print(goi(backword,lestk))
             goi(backword,lestk).append(word)
             word = ""
         elif char == "":
