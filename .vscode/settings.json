@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.phtml": "php",
+        "stdlib.h": "c"
+    }
+}
