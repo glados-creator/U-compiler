@@ -1,5 +1,7 @@
 import sys , os
 import enum
+import dataclasses
+import typing
 
 class action(enum.Enum):
     VAR_ASS = enum.auto()
@@ -45,7 +47,22 @@ class action(enum.Enum):
     TYPE_STR = enum.auto()
     TYPE_PTR = enum.auto()
 
+@dataclasses.dataclass
+class Token:
+    data : typing.Any
+    loc : int
+
+abst = []
+stack = []
+types = []
+args = []
+backword = []
+word = ""
+indent = 0
+i = 0
+
 def main(file):
+    global abst,stack,types,args,backword,word,indent,i
     if not os.path.exists(file):
         raise RuntimeError("file do not exist")
     if not os.path.isfile(file):
@@ -55,26 +72,63 @@ def main(file):
     with open(file,'r') as f:
         txt = f.read(-1)
     
-    stack = []
-    types = []
-    args = []
-    word = ""
-    indent = 0
-    i = 0
+    def goi(lis,ind):
+        if ind != 2:
+            return list
+        x= lis
+        for _ in range(ind):
+            lis = lis[-1]
+        return lis
+
+    def debug():
+        global abst,stack,types,args,backword,word,indent,i
+        print(
+        "abst : ",abst,
+        "\nstack : ",stack,
+        "\ntypes : ",types,
+        "\nargs : ",args,
+        "\nbackword : ",backword,
+        "\nword : ",word,
+        "\nindent : ",indent,
+        "\ni : ",i)
+        print()
+    
+    local_indent = 0
     while i < len(txt):
+        lestk = len(stack)
         char = txt[i]
-        if char == "(":
+        debug()
+        if char == "\n":
+            goi(backword,lestk).append(word)
+            word = ""
+        elif char == "\t" or txt[i] + txt[i+1] + txt[i+2] + txt[i+3] == "    ":
+            local_indent += 1
+        elif char == " ":
+            goi(backword,lestk).append(word)
+            word = ""
+        elif char == "":
             pass
+        elif char == "(":
+            stack.append(")")
+            goi(backword,lestk).append(word)
+            goi(backword,lestk).append([])
+            word = ""
         elif char == ")":
-            pass
+            if not stack.pop() == ")":
+                raise
+            lestk = len(stack)
+            debug()
+            goi(args,lestk).append(goi(backword,lestk).pop())
         elif char == "[":
-            pass
+            raise
         elif char == "]":
-            pass
+            raise
         elif char == "{":
-            pass
+            raise
         elif char == "}":
-            pass
+            raise
+        else:
+            word += char
         i += 1
     
 if __name__ == "__main__":
