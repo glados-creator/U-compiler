@@ -63,7 +63,19 @@ def main(file):
     i = 0
     while i < len(txt):
         char = txt[i]
-        print(char)
+        if char == "(":
+            pass
+        elif char == ")":
+            pass
+        elif char == "[":
+            pass
+        elif char == "]":
+            pass
+        elif char == "{":
+            pass
+        elif char == "}":
+            pass
+        i += 1
     
 if __name__ == "__main__":
-    main(sys.argv)
+    main("./main.py")
