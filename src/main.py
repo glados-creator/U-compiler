@@ -207,7 +207,7 @@ def main(path: str):
     UNIVERSE = import_training()
     exemples: list = import_training()  # list[tuple[input,out]]
     with open(path, "r") as f:
-        inp = f.read()
+        inp = f.read(-1)
     # NOW begin the L* algorithm
     """
     1 . Initialization: Start with an empty model (or start with universal one) 
@@ -241,7 +241,7 @@ def main(path: str):
     WORD = ""
     TOK_STATE = [[], 0]
     KEEP_VAR = {"UNIVERSE":UNIVERSE}
-    for s in inp:
+    for s in inp+"\n":
         acts = [IFELSE(
             lambda ret, WORD, TOK_STATE, KEEP_VAR, s: s == "\n", LOOP([ADD_TOKEN_SATE,APPEND_TOKEN,CLOSE_TOKEN_STATE, NEXT_PASS]), NEXT_TOKEN)]
         for i, act in enumerate(acts):
