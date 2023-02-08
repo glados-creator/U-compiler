@@ -5,6 +5,9 @@ import pickle
 
 
 class Token(enum.Enum):
+    KEYWORD = enum.auto()
+    module = enum.auto()
+
     VAR_ASS = enum.auto()
     VAR_DECLAR = enum.auto()
     VAR_USE = enum.auto()
@@ -60,79 +63,126 @@ class Token(enum.Enum):
     MACROS_C = enum.auto()
     MACROS_RUST = enum.auto()
 
+def search_word(KEEP_VAR,WORD):
+    ret = []
+    for lang in KEEP_VAR["UNIVERSE"]:           # python
+        for file in KEEP_VAR["UNIVERSE"][lang]: # ERROR_DEF
+            if WORD in KEEP_VAR["UNIVERSE"][lang][file]:
+                ret.append((lang,file)) 
+    return (ret,WORD)
 
-def DEBUG_PRINT(ret, WORD, KEEP_VAR, s):
-    print("ret", ret, "WORD", WORD, "KEEP_VAR", KEEP_VAR, "s", s)
-    return ret, WORD, KEEP_VAR
-
-
-def NEXT_TOKEN(ret, WORD, KEEP_VAR, s):
-    return ret, WORD + s, KEEP_VAR
-
-
-def ADD_TOKEN_SATE(ret, WORD, KEEP_VAR, s):
-    raise
-
-
-def CLOSE_TOKEN_STATE(ret, WORD, KEEP_VAR, s):
-    raise
+def DEBUG_PRINT(ret, WORD, TOK_STATE, KEEP_VAR, s):
+    print("DEBUG PRINT ret", ret, "WORD", WORD, "TOK_STATE",
+          TOK_STATE, "KEEP_VAR", KEEP_VAR, "s", s)
+    return ret, WORD, TOK_STATE, KEEP_VAR
 
 
-def APPEND_TOKEN(ret, WORD, KEEP_VAR, s):
-    raise
+def NEXT_PASS(ret, WORD, TOK_STATE, KEEP_VAR, s):
+    return ret, WORD, TOK_STATE, KEEP_VAR
+
+
+def NEXT_TOKEN(ret, WORD, TOK_STATE, KEEP_VAR, s):
+    return ret, WORD + s, TOK_STATE, KEEP_VAR
+
+
+def handy_follow_ptr(lis, i):
+    for _ in range(i):
+        lis = lis[-1]
+    return lis
+
+
+def ADD_TOKEN_SATE(ret, WORD, TOK_STATE, KEEP_VAR, s):
+    handy_follow_ptr(TOK_STATE[0], TOK_STATE[1]).append([])
+    TOK_STATE[1] += 1
+    return ret, WORD, TOK_STATE, KEEP_VAR
+
+
+def CLOSE_TOKEN_STATE(ret, WORD, TOK_STATE, KEEP_VAR, s):
+    TOK_STATE[1] -= 1
+    if TOK_STATE[1] < 0:
+        raise
+    return ret, WORD, TOK_STATE, KEEP_VAR
+
+
+def APPEND_TOKEN(ret, WORD, TOK_STATE, KEEP_VAR, s):
+    handy_follow_ptr(TOK_STATE[0], TOK_STATE[1]).append(search_word(KEEP_VAR,WORD))
+    WORD = ""
+    return ret, WORD, TOK_STATE, KEEP_VAR
+
+
+def LOOP(args):
+    def inner(ret, WORD, TOK_STATE, KEEP_VAR, s):
+        for action in args:
+            ret, WORD, TOK_STATE, KEEP_VAR = action(
+                ret, WORD, TOK_STATE, KEEP_VAR, s)
+        return ret, WORD, TOK_STATE, KEEP_VAR
+    return inner
 
 
 def LOGIC_AND(*cond, func):
-    def inner(ret, WORD, KEEP_VAR, s):
+    def inner(ret, WORD, TOK_STATE, KEEP_VAR, s):
         if all(*cond):
-            func(ret, WORD, KEEP_VAR, s)
+            func(ret, WORD, TOK_STATE, KEEP_VAR, s)
+        return False
     return inner
 
 
 def LOGIC_ISWORD(cond):
-    def inner(ret, WORD, KEEP_VAR, s):
+    def inner(ret, WORD, TOK_STATE, KEEP_VAR, s):
         if WORD is cond:
             return True
+        return False
     return inner
 
 
 def LOGIC_INWORD(cond):
-    def inner(ret, WORD, KEEP_VAR, s):
+    def inner(ret, WORD, TOK_STATE, KEEP_VAR, s):
         if WORD in cond:
             return True
+        return False
+    return inner
+
+
+def IFELSE(lambd, funcif, funcelse):
+    def inner(ret, WORD, TOK_STATE, KEEP_VAR, s):
+        if lambd(ret, WORD, TOK_STATE, KEEP_VAR, s):
+            return funcif(ret, WORD, TOK_STATE, KEEP_VAR, s)
+        else:
+            return funcelse(ret, WORD, TOK_STATE, KEEP_VAR, s)
     return inner
 
 
 def INWORD(cond, func):
-    def inner(ret, WORD, KEEP_VAR, s):
+    def inner(ret, WORD, TOK_STATE, KEEP_VAR, s):
         if WORD in cond:
-            func(ret, WORD, KEEP_VAR, s)
+            func(ret, WORD, TOK_STATE, KEEP_VAR, s)
     return inner
 
 
 def ISWORD(cond, func):
-    def inner(ret, WORD, KEEP_VAR, s):
+    def inner(ret, WORD, TOK_STATE, KEEP_VAR, s):
         if WORD is cond:
-            func(ret, WORD, KEEP_VAR, s)
+            func(ret, WORD, TOK_STATE, KEEP_VAR, s)
     return inner
 
 
 def RAISE(error):
-    def inner(ret, WORD, KEEP_VAR, s):
+    def inner(ret, WORD, TOK_STATE, KEEP_VAR, s):
         raise RuntimeError(error)
     return inner
 
 
-def run_sim(model: list, inp: str):
-    ret = []
-    mod = model[0]
-    WORD = ""
-    KEEP_VAR = {}
-    for s in inp:
-        acts = mod.get(s, [DEBUG_PRINT, NEXT_TOKEN])
-        for act in acts:
-            ret, WORD, KEEP_VAR = act(ret, WORD, KEEP_VAR, s)
 
+# def run_sim(model: list, inp: str):
+# ret = []
+# mod = model[0]
+# WORD = ""
+# TOK_STATE = [[],0]
+# KEEP_VAR = {}
+# for s in inp:
+# acts = [DEBUG_PRINT, IFELSE(LOGIC_INWORD(default_lookup),DEBUG_PRINT ,NEXT_TOKEN)]
+# for act in acts:
+# ret, WORD, TOK_STATE ,KEEP_VAR = act( ret, WORD, TOK_STATE ,KEEP_VAR, s)
 
 def import_training():
     UNIVERSE = {}
@@ -141,36 +191,20 @@ def import_training():
         UNIVERSE[lang] = {}
         for file in os.listdir("./training/" + lang):
             UNIVERSE[lang][os.path.splitext(os.path.basename(file))[0]] = []
-            print("training", lang+" "+os.path.splitext(os.path.basename(file))[0])
-            with open("./training/" + lang +"/"+ file,"r") as f:
-                UNIVERSE[lang][os.path.splitext(os.path.basename(file))[0]].append(f.read().splitlines())
+            print("training", lang+" " +
+                  os.path.splitext(os.path.basename(file))[0])
+            local_type = Token[os.path.splitext(os.path.basename(file))[0]]
+            with open("./training/" + lang + "/" + file, "r") as f:
+                UNIVERSE[lang][os.path.splitext(os.path.basename(file))[0]] = f.read().splitlines()
             print("done")
     # with all of thoses words we need a default model
     # that ignore these
-
-    return ret
-
-
-def import_default_model():
-    try:
-        with open("./model/m.bin", "rb") as f:
-            model = pickle.load(f)
-        print("model imported")
-        return model
-    except Exception as ex:
-        print(ex)
-        print("no model")
-        return import_training()
-
-
-def save_model(model):
-    with open("./model/m.bin", "wb") as f:
-        pickle.dump(model, f)
-    print("saved")
+    print("training done")
+    return UNIVERSE
 
 
 def main(path: str):
-    model: list = import_default_model()  # get the model list[dict]
+    UNIVERSE = import_training()
     exemples: list = import_training()  # list[tuple[input,out]]
     with open(path, "r") as f:
         inp = f.read()
@@ -204,15 +238,19 @@ def main(path: str):
     """
     # default sim
     ret = []
-    mod = model[0]
     WORD = ""
-    KEEP_VAR = {}
+    TOK_STATE = [[], 0]
+    KEEP_VAR = {"UNIVERSE":UNIVERSE}
     for s in inp:
-        print(s)
-        acts = mod.get(s, [DEBUG_PRINT, NEXT_TOKEN])
-        # for act in acts:
-        # ret, WORD, KEEP_VAR = act(ret, WORD, KEEP_VAR, s)
+        acts = [IFELSE(
+            lambda ret, WORD, TOK_STATE, KEEP_VAR, s: s == "\n", LOOP([ADD_TOKEN_SATE,APPEND_TOKEN,CLOSE_TOKEN_STATE, NEXT_PASS]), NEXT_TOKEN)]
+        for i, act in enumerate(acts):
+            # print(
+                # f"DEBUG act {i} ( {ret}, {WORD}, {TOK_STATE} ,{KEEP_VAR}, {s})")
+            ret, WORD, TOK_STATE, KEEP_VAR = act(
+                ret, WORD, TOK_STATE, KEEP_VAR, s)
         # input()
+    print(ret, WORD, TOK_STATE, KEEP_VAR)
 
 
 if __name__ == "__main__":
