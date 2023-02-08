@@ -57,7 +57,7 @@ class Token(enum.Enum):
 
 
 def DEBUG_PRINT(ret, WORD, KEEP_VAR, s):
-    print(ret, WORD, KEEP_VAR, s)
+    print("ret",ret, "WORD",WORD, "KEEP_VAR",KEEP_VAR, "s",s)
     return ret, WORD, KEEP_VAR
 
 
@@ -148,6 +148,7 @@ def main(path : str):
         acts = mod.get(s, [DEBUG_PRINT, NEXT_TOKEN])
         for act in acts:
             ret, WORD, KEEP_VAR = act(ret, WORD, KEEP_VAR, s)
+        input()
 
 
 if __name__ == "__main__":
