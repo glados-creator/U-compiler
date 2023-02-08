@@ -1,0 +1,267 @@
+x = 1
+y = 1
+
+del x
+del y
+
+pass
+
+z = lambda x : x
+
+def func(x : str):
+    return x
+
+x or y
+x and y
+not x
+
+x || y
+x && y
+!x
+!(x)
+
+x + y
+x - y
+x * y
+x ** y
+x / y
+x // y
+x % y
+-x
++x
+abs(x)
+x.conjugate()
+divmod(x, y)
+pow(x, y)
+
+x | y
+x ^ y
+x & y
+x << y
+x >> y
+~x
+
+123
+1.23
+int(x)
+float(x)
+complex(x)
+hex(x)
+oct(x)
+str(x)
+""
+list(x)
+[]
+set(x)
+{x}
+dict(x=y)
+{x:y}
+tuple(x)
+(x,)
+tuple(x,y)
+(x,y)
+frozenset(x)
+None
+False
+True
+
+assert x
+
+bytes(x)
+bytearray(x)
+memoryview(x)
+
+x < y
+x <= y
+x > y
+x >= y
+x == y
+x != y
+x is y
+x is not y
+x in y
+x not in y
+
+a + b
+add(a, b)
+seq1 + seq2
+concat(seq1, seq2)
+obj in seq
+contains(seq, obj)
+a / b
+truediv(a, b)
+a // b
+floordiv(a, b)
+a & b
+and_(a, b)
+a ^ b
+xor(a, b)
+~ a
+invert(a)
+a | b
+or_(a, b)
+a ** b
+pow(a, b)
+a is b
+is_(a, b)
+a is not b
+is_not(a, b)
+obj[k] = v
+setitem(obj, k, v)
+del obj[k]
+delitem(obj, k)
+obj[k]
+getitem(obj, k)
+a << b
+lshift(a, b)
+a % b
+mod(a, b)
+a * b
+mul(a, b)
+a @ b
+matmul(a, b)
+- a
+neg(a)
+not a
+not_(a)
++ a
+pos(a)
+a >> b
+rshift(a, b)
+seq[i:j] = values
+setitem(seq, slice(i, j), values)
+del seq[i:j]
+delitem(seq, slice(i, j))
+seq[i:j]
+getitem(seq, slice(i, j))
+s % obj
+mod(s, obj)
+a - b
+sub(a, b)
+a < b
+lt(a, b)
+a <= b
+le(a, b)
+a == b
+eq(a, b)
+a != b
+ne(a, b)
+a >= b
+ge(a, b)
+a > b
+gt(a, b)
+
+x.iadd(a, b)
+x.__iadd__(a, b)
+
+x.iand(a, b)
+x.__iand__(a, b)
+
+x.iconcat(a, b)
+x.__iconcat__(a, b)
+
+x.ifloordiv(a, b)
+x.__ifloordiv__(a, b)
+
+x.ilshift(a, b)
+x.__ilshift__(a, b)
+
+x.imod(a, b)
+x.__imod__(a, b)
+
+x.imul(a, b)
+x.__imul__(a, b)
+
+x.imatmul(a, b)
+x.__imatmul__(a, b)
+
+New in version 3.5.
+
+x.ior(a, b)
+x.__ior__(a, b)
+
+x.ipow(a, b)
+x.__ipow__(a, b)
+
+x.irshift(a, b)
+x.__irshift__(a, b)
+
+x.isub(a, b)
+x.__isub__(a, b)
+
+x.itruediv(a, b)
+x.__itruediv__(a, b)
+
+x.ixor(a, b)
+x.__ixor__(a, b)
+
+
+type(x)
+repr(x)
+print(x)
+isinstance(x,y)
+hasattr(x)
+getattr(x,y)
+setattr(x,y)
+
+x.__bool__()
+x.__len__()
+x.__eq__()
+x.__ne__()
+x.__lt__()
+x.__le__() 
+x.__gt__()
+x.__ge__()
+x.__lshift__()
+x.__mod__()
+x.__mul__()
+x.__matmul__()
+x.__neg__()
+x.__or__()
+x.__pow__()
+x.__rshift__()
+x.__truediv__()
+x.__xor__()
+x.__concat__()
+x.__contains__()
+x.__delitem__()
+x.__setitem__()
+x.__call__()
+x.__contains__()
+x.__next__()
+x.__hash__()
+x.__iter__()
+x.__enter__()
+x.__exit__()
+x.__dict__
+x.__class__
+x.__bases__
+x.__name__
+x.__qualname__
+x.__mro__
+x.__subclasses__
+range(x)
+bin(x)
+
+x in s
+x not in s
+s + t
+s * n or n * s
+s[i]
+s[i:j]
+s[i:j:k]
+len(s)
+min(s)
+max(s)
+s.index(x)
+s.count(x)
+s.invert(x)
+
+s[i] = x
+s[i:j] = t
+del s[i:j]
+s[i:j:k] = t
+del s[i:j:k]
+s += t
+s *= n
+s.insert(i, x)

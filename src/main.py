@@ -21,8 +21,13 @@ class Token(enum.Enum):
     LOGIC_MUL = enum.auto()
     LOGIC_EXP = enum.auto()
     LOGIC_DIV = enum.auto()
-    LOGIC_FLOOR = enum.auto()
-    LOGIC_CEIL = enum.auto()
+
+    BIT_OR = enum.auto()
+    BIT_XOR = enum.auto()
+    BIT_AND = enum.auto()
+    BIT_SHIFT_L = enum.auto()
+    BIT_SHIFT_R = enum.auto()
+    BIT_NOT = enum.auto()
 
     LOOP_DECLAR = enum.auto()
     LOOP_CONTINUE = enum.auto()
@@ -146,4 +151,5 @@ def main(path : str):
 
 
 if __name__ == "__main__":
-    print(main(sys.argv))
+    print("launch by arg",sys.argv)
+    print(main(sys.argv[1]))
