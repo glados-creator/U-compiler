@@ -35,11 +35,12 @@ class Token(enum.Enum):
     GOTO = enum.auto()
 
     FUNC_DECLAR = enum.auto()
+    FUNC_DEF = enum.auto()
     FUNC_CALL = enum.auto()
     FUNC_RET = enum.auto()
     IF = enum.auto()
     TRY = enum.auto()
-    EXCEPT = enum.auto()
+    CATCH = enum.auto()
     CLASS = enum.auto()
     SWITCH = enum.auto()
 
@@ -52,12 +53,16 @@ class Token(enum.Enum):
     TYPE_STR = enum.auto()
     TYPE_PTR = enum.auto()
 
+    ERROR_DEF = enum.auto()
+    ERROR_THROW = enum.auto()
+    ERROR_CATCH = enum.auto()
+
     MACROS_C = enum.auto()
     MACROS_RUST = enum.auto()
 
 
 def DEBUG_PRINT(ret, WORD, KEEP_VAR, s):
-    print("ret",ret, "WORD",WORD, "KEEP_VAR",KEEP_VAR, "s",s)
+    print("ret", ret, "WORD", WORD, "KEEP_VAR", KEEP_VAR, "s", s)
     return ret, WORD, KEEP_VAR
 
 
@@ -77,6 +82,47 @@ def APPEND_TOKEN(ret, WORD, KEEP_VAR, s):
     raise
 
 
+def LOGIC_AND(*cond, func):
+    def inner(ret, WORD, KEEP_VAR, s):
+        if all(*cond):
+            func(ret, WORD, KEEP_VAR, s)
+    return inner
+
+
+def LOGIC_ISWORD(cond):
+    def inner(ret, WORD, KEEP_VAR, s):
+        if WORD is cond:
+            return True
+    return inner
+
+
+def LOGIC_INWORD(cond):
+    def inner(ret, WORD, KEEP_VAR, s):
+        if WORD in cond:
+            return True
+    return inner
+
+
+def INWORD(cond, func):
+    def inner(ret, WORD, KEEP_VAR, s):
+        if WORD in cond:
+            func(ret, WORD, KEEP_VAR, s)
+    return inner
+
+
+def ISWORD(cond, func):
+    def inner(ret, WORD, KEEP_VAR, s):
+        if WORD is cond:
+            func(ret, WORD, KEEP_VAR, s)
+    return inner
+
+
+def RAISE(error):
+    def inner(ret, WORD, KEEP_VAR, s):
+        raise RuntimeError(error)
+    return inner
+
+
 def run_sim(model: list, inp: str):
     ret = []
     mod = model[0]
@@ -87,31 +133,48 @@ def run_sim(model: list, inp: str):
         for act in acts:
             ret, WORD, KEEP_VAR = act(ret, WORD, KEEP_VAR, s)
 
+
+def import_training():
+    UNIVERSE = {}
+    ret = []
+    for lang in os.listdir("./training/"):
+        UNIVERSE[lang] = {}
+        for file in os.listdir("./training/" + lang):
+            UNIVERSE[lang][os.path.splitext(os.path.basename(file))[0]] = []
+            print("training", lang+" "+os.path.splitext(os.path.basename(file))[0])
+            with open("./training/" + lang +"/"+ file,"r") as f:
+                UNIVERSE[lang][os.path.splitext(os.path.basename(file))[0]].append(f.read().splitlines())
+            print("done")
+    # with all of thoses words we need a default model
+    # that ignore these
+
+    return ret
+
+
 def import_default_model():
     try:
-        with open("./models/m.bin","rb") as f:
+        with open("./model/m.bin", "rb") as f:
             model = pickle.load(f)
         print("model imported")
         return model
     except Exception as ex:
         print(ex)
         print("no model")
-        return [{}]
+        return import_training()
 
-def import_training():
-    return []
 
 def save_model(model):
-    with open("./models/m.bin","wb") as f:
+    with open("./model/m.bin", "wb") as f:
         pickle.dump(model, f)
     print("saved")
 
-def main(path : str):
-    model: list = import_default_model() ### get the model list[dict]
-    exemples :list = import_training() ### list[tuple[input,out]]
-    with open(path,"r") as f:
+
+def main(path: str):
+    model: list = import_default_model()  # get the model list[dict]
+    exemples: list = import_training()  # list[tuple[input,out]]
+    with open(path, "r") as f:
         inp = f.read()
-    #### NOW begin the L* algorithm
+    # NOW begin the L* algorithm
     """
     1 . Initialization: Start with an empty model (or start with universal one) 
         and a set of equivalence classes, which are sets of words that are indistinguishable 
@@ -139,18 +202,19 @@ def main(path : str):
     6 . Testing: After the FSM is complete, 
         test it on all positive and negative examples to make sure it correctly classifies all examples.
     """
-    ### default sim
+    # default sim
     ret = []
     mod = model[0]
     WORD = ""
     KEEP_VAR = {}
     for s in inp:
+        print(s)
         acts = mod.get(s, [DEBUG_PRINT, NEXT_TOKEN])
-        for act in acts:
-            ret, WORD, KEEP_VAR = act(ret, WORD, KEEP_VAR, s)
-        input()
+        # for act in acts:
+        # ret, WORD, KEEP_VAR = act(ret, WORD, KEEP_VAR, s)
+        # input()
 
 
 if __name__ == "__main__":
-    print("launch by arg",sys.argv)
+    print("launch by arg", sys.argv)
     print(main(sys.argv[1]))
