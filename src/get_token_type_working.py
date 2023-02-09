@@ -236,19 +236,6 @@ def main(path: str):
     6 . Testing: After the FSM is complete, 
         test it on all positive and negative examples to make sure it correctly classifies all examples.
     """
-    """
-    1. Start with a minimal DFA that recognizes the empty language.
-
-    2 . Pick a word from the target language that is not currently recognized by the DFA.
-
-    3 . Add a new state to the DFA and add transitions from the current state to the new state for each symbol in the word.
-
-    4. Repeat steps 2-3 until all words in the target language are recognized by the DFA.
-
-    5 . Refine the DFA by adding more states and transitions to minimize the number of states and transitions in the DFA.
-
-    6 . Return the refined DFA as the result.
-    """
     # default sim
     ret = []
     WORD = ""
